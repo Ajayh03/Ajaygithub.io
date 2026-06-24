@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ajay H | Embedded Systems Engineer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#006970",
+                        "tertiary": "#f4f6ff",
+                        "surface-container-lowest": "#0b0f10",
+                        "background": "#101415",
+                        "inverse-primary": "#006970",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#101415",
+                        "error-container": "#93000a",
+                        "surface-tint": "#00dbe9",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#002022",
+                        "on-secondary-fixed-variant": "#5700c9",
+                        "primary": "#dbfcff",
+                        "on-secondary": "#3c0090",
+                        "secondary-fixed": "#e9ddff",
+                        "on-tertiary-fixed": "#111c2d",
+                        "inverse-on-surface": "#2d3133",
+                        "on-secondary-fixed": "#23005b",
+                        "on-primary": "#00363a",
+                        "secondary": "#d1bcff",
+                        "surface-variant": "#323537",
+                        "on-surface-variant": "#b9cacb",
+                        "inverse-surface": "#e0e3e5",
+                        "secondary-container": "#7000ff",
+                        "outline-variant": "#3b494b",
+                        "tertiary-fixed": "#d8e3fb",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "primary-fixed-dim": "#00dbe9",
+                        "surface-bright": "#363a3b",
+                        "on-tertiary": "#263143",
+                        "on-secondary-container": "#ddcdff",
+                        "on-primary-fixed-variant": "#004f54",
+                        "primary-container": "#00f0ff",
+                        "surface-container": "#1d2022",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-background": "#e0e3e5",
+                        "tertiary-container": "#cfdaf2",
+                        "outline": "#849495",
+                        "surface-container-low": "#191c1e",
+                        "on-tertiary-container": "#545f73",
+                        "primary-fixed": "#7df4ff",
+                        "surface-container-highest": "#323537",
+                        "on-surface": "#e0e3e5",
+                        "surface": "#101415",
+                        "surface-container-high": "#272a2c",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "1.5rem",
+                        "xs": "0.25rem",
+                        "margin-mobile": "1rem",
+                        "md": "1rem",
+                        "xl": "2rem",
+                        "gutter": "1.5rem",
+                        "margin-desktop": "2.5rem",
+                        "sm": "0.5rem",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "label-md": ["JetBrains Mono", "monospace"],
+                        "label-sm": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "code-block": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .reveal { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+        .glass-panel {
+            background: rgba(16, 20, 21, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .signal-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+            position: relative;
+        }
+        .signal-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -2px;
+            width: 4px;
+            height: 4px;
+            background: #00f0ff;
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<div class="scanline opacity-20"></div>
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 px-margin-desktop py-4 flex justify-between items-center">
+<div class="font-headline-md text-headline-md text-primary tracking-tighter font-extrabold">SYS_ARCH</div>
+<div class="hidden md:flex gap-xl font-label-md text-label-md uppercase tracking-widest items-center">
+<a class="text-primary border-b-2 border-primary pb-1" href="#home">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#about">About</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#skills">Skills</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#projects">Projects</a>
+<a class="px-md py-xs bg-primary-container text-on-primary-container font-bold rounded-sm hover:opacity-80 transition-all" href="#contact">Resume</a>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center pt-24 overflow-hidden" id="home">
+<div class="absolute inset-0 z-0 opacity-30">
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDt-hKq29fIm_zZTQT70FeSAIh8REE9RE_MU7Q8hDb6u3ntX_S88dn5yOpncR_e8E7DQ9DBuxrBBBZeePkKJAIam1417YxQWIOZfvKgoh2iqxzmsNdDp4s1j22gthKibwGQmKI25mN4_Mf-WUtTn-d87elZytkJmkcuFHTQvhEX_H0lfjAKlgGiejTAl2htYPK1g4q7aTwT68OhSVtRy5dzAbqMl4Zcwt0HfAC6kzzc_gh3_Rmkhwrdpx-pNc8_AdwcKyj4RR-m51V4')"></div>
+</div>
+<div class="relative z-10 px-margin-desktop w-full grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-8 flex flex-col justify-center reveal">
+<div class="flex items-center gap-sm mb-md text-primary-container">
+<span class="w-8 h-[1px] bg-primary-container"></span>
+<span class="font-label-md tracking-widest uppercase">SUMMARY</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary mb-sm leading-tight">AJAY H</h1>
+<h2 class="font-headline-md text-headline-md text-on-surface-variant mb-xl max-w-2xl">
+                     B.Tech ECE Graduate | Embedded Software Developer
+                </h2>
+<p class="font-body-lg text-body-lg text-on-surface/80 mb-xl max-w-2xl">
+
+                    B.Tech in Electronics and Communication Engineering with specialized training in Embedded Systems at Emertxe Information Technologies, Bangalore. Proficient in C programming, Linux OS, and Linux Internals,DSA,MicroControllers with hands-on experience in embedded system development.
+                </p>
+<div class="flex flex-wrap gap-md">
+<a href="Ajay_Resume_ (3) (1) (1).pdf" download="Ajay_Resume_ (3) (1) (1).pdf" class="inline-flex items-center justify-center bg-primary-container text-on-primary-container px-xl py-md font-label-md font-bold uppercase tracking-widest hover:brightness-110 transition-all">
+                        Download Resume
+                    </a>
+<a href="#contact" class="inline-flex items-center justify-center border border-primary-container text-primary-container px-xl py-md font-label-md font-bold uppercase tracking-widest hover:bg-primary-container/10 transition-all">
+                        Contact Me
+                    </a>
+</div>
+</div>
+<div class="hidden md:block col-span-4 self-center reveal" style="animation-delay: 0.2s">
+<div class="glass-panel p-md border-primary-container/20 aspect-square flex flex-col justify-end relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-md opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-primary-container" style="font-variation-settings: 'FILL' 1;">memory</span>
+</div>
+<div class="signal-line mb-sm"></div>
+<div class="font-code-block text-xs text-primary-container/60 mb-xs">STATUS: SYSTEM_READY</div>
+<div class="font-code-block text-xs text-primary-container/60">KERNEL: LINUX_EMBEDDED_v6.x</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Me -->
+<section class="py-xl px-margin-desktop bg-surface-container-low" id="about">
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-xl reveal">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-primary mb-lg flex items-center gap-md">
+<span class="material-symbols-outlined">account_tree</span>
+                    Professional Profile
+                </h3>
+<p class="font-body-md text-on-surface-variant leading-relaxed mb-md">
+                    Equipped with deep theoretical knowledge from my Electronics and Communication Engineering degree and practical rigor from specialized 10-month training at Emertxe Information Technologies, Bengaluru. I bridge the gap between high-level logic and hardware execution.
+                </p>
+<div class="space-y-sm">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-primary-container">target</span>
+<div>
+<span class="font-bold text-primary block">Objective</span>
+<span class="text-on-surface-variant">To leverage technical expertise in Embedded C and Linux to develop next-generation firmware solutions.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-lg border-l-4 border-l-primary-container">
+<h4 class="font-headline-md text-headline-md text-primary mb-md uppercase tracking-tight">Core Strengths</h4>
+<div class="grid grid-cols-1 gap-md">
+<div class="flex justify-between items-center border-b border-white/5 pb-xs">
+<span class="font-label-md text-on-surface">Low-Level Optimization</span>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="flex justify-between items-center border-b border-white/5 pb-xs">
+<span class="font-label-md text-on-surface">Real-Time Debugging</span>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">bug_report</span>
+</div>
+<div class="flex justify-between items-center border-b border-white/5 pb-xs">
+<span class="font-label-md text-on-surface">Signal Protocol Analysis</span>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div class="flex justify-between items-center border-b border-white/5 pb-xs">
+<span class="font-label-md text-on-surface">System Architecture Design</span>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">schema</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Education Timeline -->
+<section class="py-xl px-margin-desktop overflow-hidden">
+<h3 class="font-headline-lg text-headline-lg text-primary text-center mb-xl">Formation</h3>
+<div class="max-w-4xl mx-auto relative reveal">
+<!-- Timeline Center Line -->
+<div class="absolute left-1/2 -translate-x-1/2 w-[1px] h-full bg-gradient-to-b from-primary-container/0 via-primary-container/50 to-primary-container/0"></div>
+<!-- Education Item 1 -->
+<div class="relative grid grid-cols-12 mb-xl">
+<div class="col-span-5 text-right pr-lg self-center">
+<div class="font-label-md text-primary-container mb-xs">2021 — 2025</div>
+<h4 class="font-headline-md text-headline-md text-on-surface">B.Tech ECE</h4>
+<p class="text-on-surface-variant font-label-sm">College of Engineering Chengannur</p>
+</div>
+<div class="col-span-2 flex justify-center items-center">
+<div class="w-4 h-4 bg-primary-container rounded-full shadow-[0_0_15px_rgba(0,240,255,0.6)]"></div>
+</div>
+<div class="col-span-5 pl-lg self-center opacity-40">
+<!-- Spacer -->
+</div>
+</div>
+<!-- Education Item 2 -->
+<div class="relative grid grid-cols-12">
+<div class="col-span-5 text-right pr-lg self-center opacity-40">
+<!-- Spacer -->
+</div>
+<div class="col-span-2 flex justify-center items-center">
+<div class="w-4 h-4 bg-primary-container rounded-full shadow-[0_0_15px_rgba(0,240,255,0.6)]"></div>
+</div>
+<div class="col-span-5 pl-lg self-center">
+<div class="font-label-md text-primary-container mb-xs">10-Month Specialized Program</div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Embedded Systems Training</h4>
+<p class="text-on-surface-variant font-label-sm">Emertxe Information Technologies, Bengaluru</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Skills Grid -->
+<section class="py-xl px-margin-desktop bg-surface-container-low" id="skills">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-xl reveal">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-primary">Technical Stack</h3>
+<p class="font-label-md text-on-surface-variant uppercase tracking-widest mt-xs">Core Competencies &amp; Tooling</p>
+</div>
+<div class="text-primary-container font-code-block text-sm hidden md:block">
+                    grep -r "skills" /var/log/engineer_profile
+                </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter reveal" style="animation-delay: 0.2s">
+<!-- Category: Languages -->
+<div class="glass-panel p-lg">
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-primary-container">code</span>
+<h4 class="font-label-md text-on-surface font-bold uppercase">Languages</h4>
+</div>
+<div class="space-y-lg">
+<div>
+<div class="flex justify-between mb-xs">
+<span class="font-label-sm text-on-surface">Embedded C</span>
+<span class="font-label-sm text-primary-container">95%</span>
+</div>
+<div class="w-full bg-white/5 h-1">
+<div class="bg-primary-container h-full w-[95%] shadow-[0_0_10px_#00f0ff]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-xs">
+<span class="font-label-sm text-on-surface">C++</span>
+<span class="font-label-sm text-primary-container">70%</span>
+</div>
+<div class="w-full bg-white/5 h-1">
+<div class="bg-primary-container h-full w-[70%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-xs">
+<span class="font-label-sm text-on-surface">Python (Hardware Integration)</span>
+<span class="font-label-sm text-primary-container">80%</span>
+</div>
+<div class="w-full bg-white/5 h-1">
+<div class="bg-primary-container h-full w-[80%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Category: Hardware & Protocols -->
+<div class="glass-panel p-lg">
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-primary-container">memory</span>
+<h4 class="font-label-md text-on-surface font-bold uppercase">Hardware &amp; I/O</h4>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">UART</span>
+</div>
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">SPI</span>
+</div>
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">I2C</span>
+</div>
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">CAN</span>
+</div>
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">STM32</span>
+</div>
+<div class="bg-surface-container p-sm border border-white/5 text-center">
+<span class="block font-label-md text-primary-container">AVR</span>
+</div>
+</div>
+</div>
+<!-- Category: Systems -->
+<div class="glass-panel p-lg">
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-primary-container">terminal</span>
+<h4 class="font-label-md text-on-surface font-bold uppercase">Systems &amp; Tools</h4>
+</div>
+<div class="space-y-md">
+<div class="flex gap-md items-center">
+<span class="w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+<span class="font-body-md text-on-surface-variant">Linux Internals &amp; Kernel Dev</span>
+</div>
+<div class="flex gap-md items-center">
+<span class="w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+<span class="font-body-md text-on-surface-variant">Data Structures &amp; Algos</span>
+</div>
+<div class="flex gap-md items-center">
+<span class="w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+<span class="font-body-md text-on-surface-variant">Git / CI Pipelines</span>
+</div>
+<div class="flex gap-md items-center">
+<span class="w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+<span class="font-body-md text-on-surface-variant">Shell Scripting</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Projects Section -->
+<section class="py-xl px-margin-desktop" id="projects">
+<div class="max-w-7xl mx-auto">
+<h3 class="font-headline-lg text-headline-lg text-primary mb-xl">Systems Gallery</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter reveal">
+<!-- Featured Project: Talk to Write -->
+<div class="lg:col-span-2 glass-panel group overflow-hidden relative border-primary-container/30">
+<div class="absolute top-4 right-4 z-20">
+<span class="bg-primary-container text-on-primary-container font-label-sm px-md py-1 rounded-full uppercase font-bold tracking-widest shadow-[0_0_15px_rgba(0,240,255,0.4)]">Featured Project</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2">
+<div class="h-64 md:h-full overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A highly detailed close-up of a high-tech CNC plotter mechanism with mechanical arms and wiring, illuminated by neon cyan LEDs in a dimly lit dark-mode engineering laboratory. The aesthetic is industrial yet futuristic, focusing on precise hardware engineering and integration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2jWJt-YQQ5QUiiF9NTAdrNDSyWZ4tjWStVNenGWHcB8MHOPNZz1Ai-hsCr-0c0Y8hAElDIJZwg37uo8tZZrSBm7wy2d0zmtxe7XhX8D-wxbPlN8rsqCiwjfHiHbodtAGqHZBkKfqXs1iYRhA5Fy2ryq8FJUgL4P_VH3dUq_Q3IEO5FdCv4DcUigTGybSVFh3tbZ7UPEDfvRZI06fKCkQl7jHukxWKVRCK3l_5O8olH26xD593VRnvuCyGls-SJm6ecNbXopt9S2vB"/>
+</div>
+<div class="p-lg flex flex-col justify-between">
+<div>
+<h4 class="font-headline-md text-headline-md text-primary mb-sm">Talk to Write</h4>
+<p class="font-body-md text-on-surface-variant mb-md">
+                                    AI-powered voice-to-pen writing system utilizing a custom CNC plotter. Integrated Gemini AI with GRBL firmware on Arduino and Raspberry Pi to translate spoken ideas into handwritten output.
+                                </p>
+<ul class="list-disc pl-5 space-y-2 mb-md text-on-surface-variant">
+<li>Designed the end-to-end system architecture for voice capture, AI processing, and motion control.</li>
+<li>Implemented firmware-level command parsing on Arduino and synchronized Raspberry Pi control loops.</li>
+<li>Delivered handwritten output with position calibration, error correction, and CNC stabilization.</li>
+</ul>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-white/5 border border-white/10 px-sm py-1 font-label-sm text-on-surface-variant">Raspberry Pi</span>
+<span class="bg-white/5 border border-white/10 px-sm py-1 font-label-sm text-on-surface-variant">Python</span>
+<span class="bg-white/5 border border-white/10 px-sm py-1 font-label-sm text-on-surface-variant">GRBL</span>
+<span class="bg-white/5 border border-white/10 px-sm py-1 font-label-sm text-on-surface-variant">LLM API</span>
+</div>
+</div>
+<button class="text-primary-container font-label-md flex items-center gap-xs group/btn">
+                                System Overview <span class="material-symbols-outlined transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card: Image Steganography -->
+<div class="glass-panel p-lg group hover:border-primary-container/40 transition-all">
+<div class="mb-md">
+<span class="material-symbols-outlined text-[48px] text-primary-container/60 group-hover:text-primary-container transition-colors" style="font-variation-settings: 'FILL' 1;">visibility_off</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Image Steganography</h4>
+<p class="font-body-md text-on-surface-variant mb-md">
+                                    Lossless LSB encoding system in BMP images using C. Designed to hide secret payloads while preserving image integrity and allowing secure extraction.
+                                </p>
+<ul class="list-disc pl-5 space-y-2 mb-lg text-on-surface-variant">
+<li>Implemented bit-level message embedding and extraction with error checking.</li>
+<li>Optimized file handling for minimal memory use and robust I/O validation.</li>
+<li>Built a command-line interface for encoding, decoding, and payload verification.</li>
+</ul>
+<div class="flex gap-xs">
+<span class="text-primary-container font-label-sm">#C_Programming</span>
+<span class="text-primary-container font-label-sm">#Bitwise_Ops</span>
+</div>
+</div>
+<!-- Card: Mini Shell -->
+<div class="glass-panel p-lg group hover:border-primary-container/40 transition-all">
+<div class="mb-md text-primary-container/60">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Mini Shell</h4>
+<p class="font-body-md text-on-surface-variant mb-md">
+                                    Custom Linux shell with command parsing, built-in utilities, and process control. Supports piping, background execution, and basic job management.
+                                </p>
+<ul class="list-disc pl-5 space-y-2 mb-lg text-on-surface-variant">
+<li>Implemented a command interpreter with tokenization and built-in command support.</li>
+<li>Handled process creation, execution, and signal management using fork/exec.</li>
+<li>Added support for pipes and background jobs to mirror real shell behavior.</li>
+</ul>
+<div class="flex gap-xs">
+<span class="text-primary-container font-label-sm">#Linux_Internals</span>
+<span class="text-primary-container font-label-sm">#Sys_Calls</span>
+</div>
+</div>
+<!-- Card: Address Book -->
+<div class="glass-panel p-lg group hover:border-primary-container/40 transition-all">
+<div class="mb-md text-primary-container/60">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">contact_page</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Address Book</h4>
+<p class="font-body-md text-on-surface-variant mb-md">
+                                    Contact management system built in C with add, edit, delete, and search operations. Designed for compact storage and fast lookup on constrained systems.
+                                </p>
+<ul class="list-disc pl-5 space-y-2 mb-lg text-on-surface-variant">
+<li>Implemented CRUD functionality with binary file persistence.</li>
+<li>Optimized search and memory use for smaller embedded environments.</li>
+<li>Built a clean CLI interface for managing records efficiently.</li>
+</ul>
+<div class="flex gap-xs">
+<span class="text-primary-container font-label-sm">#File_IO</span>
+<span class="text-primary-container font-label-sm">#Data_Persistence</span>
+</div>
+</div>
+<!-- Card: TFTP File Transfer -->
+<div class="glass-panel p-lg group hover:border-primary-container/40 transition-all">
+<div class="mb-md text-primary-container/60">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">settings_ethernet</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">TFTP File Transfer</h4>
+<p class="font-body-md text-on-surface-variant mb-md">
+                                    UDP-based client-server implementation enabling lightweight file transfers between embedded systems. Built with reliability and simplicity for constrained networking environments.
+                                </p>
+<ul class="list-disc pl-5 space-y-2 mb-lg text-on-surface-variant">
+<li>Implemented TFTP protocol read/write operations with block acknowledgement and retransmission logic.</li>
+<li>Optimized transfer workflows for small packet sizes and minimal memory overhead.</li>
+<li>Tested end-to-end file upload/download scenarios between two Linux hosts.</li>
+</ul>
+<div class="flex gap-xs">
+<span class="text-primary-container font-label-sm">#Networking</span>
+<span class="text-primary-container font-label-sm">#UDP_Socket</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Achievements -->
+<section class="py-xl px-margin-desktop bg-primary-container/5 relative overflow-hidden">
+<div class="max-w-4xl mx-auto reveal">
+<h3 class="font-headline-lg text-headline-lg text-primary text-center mb-xl">Recognition &amp; Certification</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="text-center p-md">
+<span class="material-symbols-outlined text-[48px] text-primary-container mb-sm" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<h4 class="font-label-md text-on-surface font-bold">Expo 2025</h4>
+<p class="font-label-sm text-on-surface-variant mt-xs">Project Showcase &amp; Media Recognition</p>
+</div>
+<div class="text-center p-md border-x border-white/5">
+<span class="material-symbols-outlined text-[48px] text-primary-container mb-sm" style="font-variation-settings: 'FILL' 1;">school</span>
+<h4 class="font-label-md text-on-surface font-bold">Emertxe Professional</h4>
+<p class="font-label-sm text-on-surface-variant mt-xs">Advanced Embedded Training Certification</p>
+</div>
+<div class="text-center p-md">
+<span class="material-symbols-outlined text-[48px] text-primary-container mb-sm" style="font-variation-settings: 'FILL' 1;">sensors</span>
+<h4 class="font-label-md text-on-surface font-bold">NPTEL IoT</h4>
+<p class="font-label-sm text-on-surface-variant mt-xs">Introduction to Internet of Things (2024)</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="py-xl px-margin-desktop" id="contact">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl reveal">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-primary mb-md">Initialize Connection</h3>
+<p class="font-body-md text-on-surface-variant mb-xl max-w-lg">
+                        Open for collaborations in embedded software, firmware development, or IoT architecture. Reach out for a technical breakdown of any projects or for professional inquiries.
+                    </p>
+<div class="space-y-lg">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">location_on</span>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant uppercase tracking-widest">Location</div>
+<div class="font-body-md text-on-surface">Kerala, India</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">phone</span>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant uppercase tracking-widest">Mobile</div>
+<div class="font-body-md text-on-surface"><a href="tel:+919876543210" class="hover:text-primary-container transition-colors">+91 98765 43210</a></div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">mail</span>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant uppercase tracking-widest">Email</div>
+<div class="font-body-md text-on-surface"><a href="mailto:ajay.h@embedded.dev" class="hover:text-primary-container transition-colors">ajay.h@embedded.dev</a></div>
+</div>
+</div>
+<div class="flex gap-md pt-lg">
+<a class="w-10 h-10 glass-panel flex items-center justify-center hover:bg-primary-container/20 transition-all text-primary-container" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
+</a>
+<a class="w-10 h-10 glass-panel flex items-center justify-center hover:bg-primary-container/20 transition-all text-primary-container" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+</a>
+</div>
+</div>
+</div>
+<div class="glass-panel p-lg">
+<form class="space-y-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-primary-container uppercase tracking-widest">Name</label>
+<input class="bg-surface-container border-b border-primary-container focus:ring-0 focus:border-primary-container outline-none px-sm py-md text-on-surface" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-primary-container uppercase tracking-widest">Protocol (Subject)</label>
+<input class="bg-surface-container border-b border-primary-container focus:ring-0 focus:border-primary-container outline-none px-sm py-md text-on-surface" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-primary-container uppercase tracking-widest">Payload (Message)</label>
+<textarea class="bg-surface-container border-b border-primary-container focus:ring-0 focus:border-primary-container outline-none px-sm py-md text-on-surface resize-none" rows="4"></textarea>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container font-label-md font-bold py-md uppercase tracking-widest flex items-center justify-center gap-md hover:brightness-110 transition-all" type="submit">
+                            Send Transmission
+                            <span class="material-symbols-outlined">send</span>
+</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 py-xl px-margin-desktop">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex flex-col items-center md:items-start">
+<div class="font-label-md text-label-md text-on-surface font-bold mb-xs">SYS_ARCH : PERSONAL_PORTFOLIO</div>
+<p class="font-label-sm text-on-surface-variant tracking-wider">© 2024 SYSTEM_ARCHITECT. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-xl font-label-sm text-label-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">Repository</a>
+<a class="hover:text-primary transition-colors" href="#">Status: Stable</a>
+</div>
+</div>
+</footer>
+<script>
+        // Intersection Observer for reveal animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if(this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body></html>
